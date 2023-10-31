@@ -27,7 +27,10 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run cypress:test
+    - name: Check errors
+      if: ${{ failure() }}
+      run: docker compose logs
     - name: Stop containers
-      if: always()
+      if: ${{ always() }}
       run: docker-compose -f "docker-compose.yml" down
 
