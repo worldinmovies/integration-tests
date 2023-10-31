@@ -111,7 +111,6 @@ services:
   # Backends
   tmdb:
     image: seppaleinen/worldinmovies_tmdb_import
-    build: backend/tmdb_import/
     expose:
       - 8020
     ports:
@@ -137,8 +136,6 @@ services:
 
   neo4jservice:
     image: seppaleinen/worldinmovies_neo4j
-#    image: docker.io/library/neo4j-service:0.0.1-SNAPSHOT
-    build: backend/neo4j-service/
     ports:
       - "127.0.0.1:8082:8082"
     restart: unless-stopped
@@ -164,7 +161,6 @@ services:
 
   imdb:
     image: seppaleinen/worldinmovies_imdb
-    build: backend/imdb/
     ports:
       - "127.0.0.1:8000:8000"
     environment:
@@ -188,7 +184,6 @@ services:
   # Frontend
   webapp:
     image: seppaleinen/worldinmovies_webapp
-    build: frontend/app/
     depends_on:
       imdb:
         condition: service_healthy
@@ -210,15 +205,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
-
-  dozzle:
-    container_name: dozzle
-    image: amir20/dozzle:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "127.0.0.1:9999:8080"
-
 
 volumes:
   pgdata:
