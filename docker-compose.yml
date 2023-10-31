@@ -1,0 +1,228 @@
+version: '3.8'
+
+services:
+  # DBS
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    volumes:
+      - ./persistent-data/postgres-data:/var/lib/postgresql
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - PGUSER=postgres
+      - TZ=Europe/Stockholm
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "postgres" ]
+      interval: 30s
+      timeout: 5s
+      retries: 1
+      start_period: 5s
+
+  mongo:
+    image: mongo:7-jammy
+    container_name: mongo
+    volumes:
+      - "./persistent-data/mongo-data:/data/db"
+    ports:
+      - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 20s
+      retries: 1
+      start_period: 10s
+
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    environment:
+      - TZ=Europe/Stockholm
+      - NEO4J_AUTH=${NEO4J_AUTH:-neo4j/secretpassword}
+    volumes:
+      - "./persistent-data/neo4j-data:/var/lib/neo4j/data"
+    healthcheck:
+      start_period: 20s
+      interval: 30s
+      test: [ "CMD", "/var/lib/neo4j/bin/neo4j", "status" ]
+      timeout: 10s
+      retries: 1
+
+
+  # Queues
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 30s
+      timeout: 3s
+      retries: 1
+      start_period: 10s
+
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.4
+    container_name: kafka
+    hostname: kafka
+    privileged: true
+    expose:
+      - 9092
+    ports:
+      - "127.0.0.1:9092:9092"
+      - "127.0.0.1:9093:9093"
+    volumes:
+      - "./persistent-data/kafka-data:/bitnami"
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Stockholm
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=LOCAL:PLAINTEXT,CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT
+      - KAFKA_BROKER_ID=1001
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1001@kafka:9094
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - BITNAMI_DEBUG=yes
+      - KAFKA_CFG_NODE_ID=1001
+      - KAFKA_KRAFT_CLUSTER_ID=OTMwNzFhYTY1ODNiNGE5OT
+      - KAFKA_CFG_KRAFT_REPLICATION_FACTOR=1
+      - KAFKA_CFG_ADVERTISED_LISTENERS=LOCAL://127.0.0.1:9093,DOCKER://kafka:9092
+      - KAFKA_CFG_LISTENERS=LOCAL://:9093,CONTROLLER://:9094,DOCKER://:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=DOCKER
+      - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic movie || true && kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic movie --describe" ]
+      interval: 30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+
+
+  # Backends
+  tmdb:
+    image: seppaleinen/worldinmovies_tmdb_import
+    build: backend/tmdb_import/
+    expose:
+      - 8020
+    ports:
+      - "127.0.0.1:8020:8020"
+    environment:
+      - TMDB_API=${TMDB_API}
+      - SENTRY_API=${SENTRY_API_TMDB:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -k --fail https://localhost:8020/health" ]
+      interval: 30s
+      timeout: 2s
+      retries: 1
+      start_period: 15s
+
+
+  neo4jservice:
+    image: seppaleinen/worldinmovies_neo4j
+#    image: docker.io/library/neo4j-service:0.0.1-SNAPSHOT
+    build: backend/neo4j-service/
+    ports:
+      - "127.0.0.1:8082:8082"
+    restart: unless-stopped
+    environment:
+      - SENTRY_API=${SENTRY_API_NEO4J:-}
+      - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-}
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      tmdb:
+        condition: service_healthy
+      imdb:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8082/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 1
+      start_period: 20s
+
+
+  imdb:
+    image: seppaleinen/worldinmovies_imdb
+    build: backend/imdb/
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - SENTRY_API=${SENTRY_API_IMDB:-}
+      - KAFKA_TOPIC=${KAFKA_TOPIC:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -k --fail https://localhost:8000/health" ]
+      interval: 30s
+      timeout: 2s
+      retries: 1
+      start_period: 15s
+
+  # Frontend
+  webapp:
+    image: seppaleinen/worldinmovies_webapp
+    build: frontend/app/
+    depends_on:
+      imdb:
+        condition: service_healthy
+      tmdb:
+        condition: service_healthy
+      neo4jservice:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - REACT_APP_IMDB_URL=${REACT_APP_IMDB_URL:-}
+      - REACT_APP_TMDB_URL=${REACT_APP_TMDB_URL:-}
+      - REACT_APP_NEO_URL=${REACT_APP_NEO_URL:-}
+      - REACT_APP_SENTRY_API=${SENTRY_API_WEB:-}
+    healthcheck:
+      test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:9999:8080"
+
+
+volumes:
+  pgdata:
+  certs:
+  kafka_data:
+  mongo_data:
+  neo4j_data:
