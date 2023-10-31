@@ -16,15 +16,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+    - run: cd cypress
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: 18.x
         cache: 'npm'
-    - name: Start containers
-      run: docker-compose -f "docker-compose.yml" up -d --build
-    - run: npm --prefix cypress install
-    - run: npm --prefix cypress run cypress:test
+    - run: npm install
+    - run: npm run cypress:test
     - name: Stop containers
       if: always()
       run: docker-compose -f "docker-compose.yml" down
