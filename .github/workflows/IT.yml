@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Start containers
-      run: docker-compose -f "docker-compose.yml" up -d
+      run: docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
     - run: cd cypress
     - name: Use Node.js 18.x
       uses: actions/setup-node@v3
