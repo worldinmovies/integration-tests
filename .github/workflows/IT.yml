@@ -31,10 +31,10 @@ jobs:
       run: |
         docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
         docker cp datasubset/tmdb.movie.json mongo:/
-        docker exec -ti mongo mongoimport -d tmdb -c movie --mode upsert --file tmdb.movie.json
+        docker exec mongo mongoimport -d tmdb -c movie --mode upsert --file tmdb.movie.json
         docker cp datasubset/postgres* postgres:/
-        docker exec -ti postgres psql -U postgres -d postgres COPY listings FROM '/postgres.m.100.tsv' DELIMITER E'\t' CSV HEADER;
-        docker exec -ti postgres psql -U postgres -d postgres COPY listings FROM '/postgres.pcm.100.tsv' DELIMITER E'\t' CSV HEADER;
+        docker exec postgres psql -U postgres -d postgres COPY listings FROM '/postgres.m.100.tsv' DELIMITER E'\t' CSV HEADER;
+        docker exec postgres psql -U postgres -d postgres COPY listings FROM '/postgres.pcm.100.tsv' DELIMITER E'\t' CSV HEADER;
         npm --prefix cypress install
         npm --prefix cypress run cypress:test
       shell: bash
