@@ -38,12 +38,6 @@ jobs:
         image: mongo:7-jammy
         ports:
           - "127.0.0.1:27017:27017"
-        options: >-
-          --health-cmd "mongosh --eval db.adminCommand('ping')"
-          --health-interval 30s
-          --health-timeout 20s
-          --health-retries 2
-          --health-start-period 10s
       neo4j:
         image: neo4j:5
         ports:
