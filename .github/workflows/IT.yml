@@ -31,8 +31,8 @@ jobs:
         options: >-
           --health-cmd pg_isready
           --health-interval 30s
-          --health-timeout: 5s
-          --health-retries: 1
+          --health-timeout 5s
+          --health-retries 1
           --health-start-period 5s
       mongo:
         image: mongo:7-jammy
