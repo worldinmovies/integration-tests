@@ -96,7 +96,7 @@ jobs:
           --health-interval 30s
           --health-timeout 5s
           --health-retries 3
-          --health-start_period 20s
+          --health-start-period 20s
           --privileged
       tmdb:
         image: seppaleinen/worldinmovies_tmdb:latest
@@ -107,7 +107,7 @@ jobs:
           --health-interval 30s
           --health-timeout 2s
           --health-retries 1
-          --health-start_period 15s
+          --health-start-period 15s
       neo4jservice:
         image: seppaleinen/worldinmovies_neo4j
         ports:
@@ -117,7 +117,7 @@ jobs:
           --health-interval 10s
           --health-timeout 10s
           --health-retries 3
-          --health-start_period 20s
+          --health-start-period 20s
       imdb:
         image: seppaleinen/worldinmovies_imdb
         ports:
@@ -127,7 +127,7 @@ jobs:
           --health-interval 30s
           --health-timeout 2s
           --health-retries 1
-          --health-start_period 15s
+          --health-start-period 15s
       webapp:
         image: seppaleinen/worldinmovies_webapp
         ports:
@@ -138,7 +138,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          --health-start_period 5s
+          --health-start-period 5s
 
     steps:
     - uses: actions/checkout@v3
