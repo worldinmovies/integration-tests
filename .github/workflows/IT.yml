@@ -28,7 +28,8 @@ jobs:
         cache: 'npm'
         cache-dependency-path: cypress/package-lock.json
     - name: Start containers
-      run: docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
+      run: |
+        docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
         npm --prefix cypress install
         npm --prefix cypress run cypress:test
       shell: bash
