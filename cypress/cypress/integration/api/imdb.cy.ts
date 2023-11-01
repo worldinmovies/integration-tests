@@ -1,4 +1,4 @@
-const imdbUrl = 'http://localhost:8000'
+const imdbUrl = 'http://imdb:8000'
 const expectedImdbStatus = {
     total: Cypress._.isNumber,
     fetched: Cypress._.isNumber,

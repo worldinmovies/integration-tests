@@ -16,7 +16,7 @@ const expectedStatus = {
     percentageDone: Cypress._.isNumber,
 }
 
-const url = 'http://localhost:8082'
+const url = 'http://neo4jservice:8082'
 
 describe('Neo4J Service endpoints', () => {
     it('status response', () => {

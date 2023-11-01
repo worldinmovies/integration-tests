@@ -1,4 +1,4 @@
-const tmdbUrl = 'http://localhost:8020'
+const tmdbUrl = 'http://tmdb:8020'
 
 
 describe('TMDB Service endpoints', () => {
