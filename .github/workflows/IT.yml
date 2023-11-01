@@ -29,7 +29,7 @@ jobs:
           PGUSER: postgres
           TZ: Europe/Stockholm
         options: >-
-          --health-cmd pg_isready -d postgres
+          --health-cmd pg_isready
           --health-interval 30s
           --health-timeout: 5s
           --health-retries: 1
