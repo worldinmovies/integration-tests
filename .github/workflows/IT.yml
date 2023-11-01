@@ -28,6 +28,7 @@ jobs:
       with:
         node-version: 18.x
         cache: 'npm'
+        cache-dependency-path: cypress/package-lock.json
     - run: npm --prefix cypress install
     - run: npm --prefix cypress run cypress:test
     - name: Check errors
