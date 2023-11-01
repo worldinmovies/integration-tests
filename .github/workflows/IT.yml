@@ -31,7 +31,7 @@ jobs:
       run: |
         docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
         docker cp datasubset/tmdb.movie.json mongo:/
-        docker exec mongo mongoimport -d tmdb -c movie --mode upsert --file tmdb.movie.json
+        docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
         docker cp datasubset/postgres* postgres:/
         docker exec postgres psql -U postgres -d postgres COPY listings FROM '/postgres.m.100.tsv' DELIMITER E'\t' CSV HEADER;
         docker exec postgres psql -U postgres -d postgres COPY listings FROM '/postgres.pcm.100.tsv' DELIMITER E'\t' CSV HEADER;
