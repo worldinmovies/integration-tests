@@ -27,9 +27,12 @@ jobs:
         node-version: 18.x
         cache: 'npm'
         cache-dependency-path: cypress/package-lock.json
-    - run: docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
+    - run: docker compose up -d
+      shell: bash
     - run: npm --prefix cypress install
+      shell: bash
     - run: npm --prefix cypress run cypress:test
+      shell: bash
     - name: Check errors
       if: ${{ failure() }}
       run: docker compose logs && docker ps -a
