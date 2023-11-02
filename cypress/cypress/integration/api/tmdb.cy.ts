@@ -22,7 +22,7 @@ describe('TMDB Service endpoints', () => {
             overview: Cypress._.isString,
             vote_count: Cypress._.isNumber,
         }
-        cy.request(`${tmdbUrl}/movie/9322,1700`)
+        cy.request(`${tmdbUrl}/movie/2,4`)
             .then((resp) => {
                 expect(resp.status).to.eq(200);
                 expect(resp.body.length).to.be.eq(2);

@@ -82,7 +82,7 @@ describe('IMDB Service endpoints', () => {
             vote_count: Cypress._.isNumber,
             weighted_rating: Cypress._.isNumber
         }
-        cy.request(`${imdbUrl}/votes/9322,1700`)
+        cy.request(`${imdbUrl}/votes/2,4`)
             .then((resp) => {
                 expect(resp.status).to.eq(200);
                 expect(resp.body.length).to.be.greaterThan(0);
@@ -108,7 +108,7 @@ describe('IMDB Service endpoints', () => {
             vote_average: Cypress._.isNumber,
             vote_count: Cypress._.isNumber
         }
-        cy.request(`${imdbUrl}/view/best/SE`)
+        cy.request(`${imdbUrl}/view/best/US`)
             .then((resp) => {
                 expect(resp.status).to.eq(200);
                 expect(resp.body).to.have.all.keys(expectedResponse);
