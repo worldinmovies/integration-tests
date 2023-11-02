@@ -23,5 +23,6 @@ jobs:
           ssh_connection_timeout: '300'
           # Seconds to timeout SSH session.
           session_timeout: 3600
+      - name: Deploy
         run: ls -lh
 
