@@ -1,4 +1,4 @@
-const imdbUrl = 'http://localhost:8000'
+const imdbUrl = 'https://localhost:8000'
 const expectedImdbStatus = {
     total: Cypress._.isNumber,
     fetched: Cypress._.isNumber,
@@ -82,7 +82,7 @@ describe('IMDB Service endpoints', () => {
             vote_count: Cypress._.isNumber,
             weighted_rating: Cypress._.isNumber
         }
-        cy.request(`${imdbUrl}/votes/2,4`)
+        cy.request(`${imdbUrl}/votes/2,5`)
             .then((resp) => {
                 expect(resp.status).to.eq(200);
                 expect(resp.body.length).to.be.greaterThan(0);
