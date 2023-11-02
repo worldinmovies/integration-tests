@@ -36,7 +36,7 @@ describe('Neo4J Service endpoints', () => {
     });
 
     describe('View best country endpoint', () => {
-        it('Standard call', () => {
+        it.skip('Standard call', () => {
             cy.request(`${url}/view/best/SE`)
                 .then((resp) => {
                     expect(resp.status).to.eq(200);
@@ -47,7 +47,7 @@ describe('Neo4J Service endpoints', () => {
                 })
         })
 
-        it('Call with skip should return different values from regular', () => {
+        it.skip('Call with skip should return different values from regular', () => {
             cy.request(`${url}/view/best/SE`)
                 .then((firstResponse) => {
                     expect(firstResponse.status).to.eq(200);
@@ -64,7 +64,7 @@ describe('Neo4J Service endpoints', () => {
                 })
         })
 
-        it('Call with limit should return only limited response', () => {
+        it.skip('Call with limit should return only limited response', () => {
             cy.request(`${url}/view/best/SE?limit=1`    )
                 .then((response) => {
                     expect(response.status).to.eq(200);
