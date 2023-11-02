@@ -12,13 +12,13 @@ jobs:
       - uses: omahn/wireguard-ssh-github-action@v1.4
         with:
           # Required. IP address of your WireGuard peer/endpoint. Must be publicly reachable.
-          peer_ip: ${{ WIREGUARD_PEER_IP }}
+          peer_ip: ${{ secrets.WIREGUARD_PEER_IP }}
           # Required. SSH public key as a string.
-          ssh_public_key: ${{ SSH_PUB_KEY }}
+          ssh_public_key: ${{ secrets.SSH_PUB_KEY }}
           # Port of WireGuard peer.
-          peer_port: ${{ WIREGUARD_PEER_PORT }}
+          peer_port: ${{ secrets.WIREGUARD_PEER_PORT }}
           # Private IP of GitHub WireGuard peer.
-          github_ip: ${{ INTERNAL_IP }}
+          github_ip: ${{ secrets.INTERNAL_IP }}
           # Seconds to wait for SSH connection.
           ssh_connection_timeout: '300'
           # Seconds to timeout SSH session.
