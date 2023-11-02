@@ -34,8 +34,8 @@ jobs:
         docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
         docker cp datasubset/postgres.m.100.tsv postgres:/
         docker cp datasubset/postgres.pcm.100.tsv postgres:/
-        docker exec postgres psql -U postgres -d postgres -f /postgres.m.100.tsv
-        docker exec postgres psql -U postgres -d postgres -f /postgres.pcm.100.tsv
+        docker exec postgres psql -U postgres -d postgres && psql COPY app_movie FROM '/postgres.m.100.tsv' DELIMITER E'\t' CSV HEADER;
+        docker exec postgres psql -U postgres -d postgres && psql COPY app_productioncountries_movies FROM '/postgres.pcm.100.tsv' DELIMITER E'\t' CSV HEADER;
         npm --prefix cypress install
         npm --prefix cypress run cypress:test
       shell: bash
