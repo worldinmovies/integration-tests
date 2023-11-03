@@ -20,7 +20,7 @@ jobs:
           # Required: The SSH private key to use for authentication.
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # Required: The WireGuard configuration to use for the tunnel.
-          conf: ${{ secrets.WIREGUARD_CONF }}
+          conf: ${{ secrets.WIREGUARD_CONFIG }}
           # Required: The script to run on the remote host after the tunnel is established.
           script: "ls -lh"
 
