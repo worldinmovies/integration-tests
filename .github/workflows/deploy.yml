@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: seppaleinen/actions-ssh-wireguard@0.1-dev
+      - uses: seppaleinen/actions-ssh-wireguard@0.2-dev
         with:
           # Required: The SSH user to connect as.
           user: ${{ secrets.SSH_USER }}
