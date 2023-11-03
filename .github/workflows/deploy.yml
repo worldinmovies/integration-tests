@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: niwee-productions/actions-ssh-wireguard@beta
+      - uses: seppaleinen/actions-ssh-wireguard@dev
         with:
           # Required: The SSH user to connect as.
           user: ${{ secrets.SSH_USER }}
