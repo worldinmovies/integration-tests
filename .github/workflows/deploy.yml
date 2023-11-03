@@ -9,20 +9,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: omahn/wireguard-ssh-github-action@v1.4
+      - uses: niwee-productions/actions-ssh-wireguard@0.1
         with:
-          # Required. IP address of your WireGuard peer/endpoint. Must be publicly reachable.
-          peer_ip: ${{ secrets.WIREGUARD_PEER_IP }}
-          # Required. SSH public key as a string.
-          ssh_public_key: ${{ secrets.SSH_PUB_KEY }}
-          # Port of WireGuard peer.
-          peer_port: ${{ secrets.WIREGUARD_PEER_PORT }}
-          # Private IP of GitHub WireGuard peer.
-          github_ip: ${{ secrets.INTERNAL_IP }}
-          # Seconds to wait for SSH connection.
-          ssh_connection_timeout: '300'
-          # Seconds to timeout SSH session.
-          session_timeout: 3600
-      - name: Deploy
-        run: ls -lh
+          # Required: The SSH user to connect as.
+          user: ${{ secrets.SSH_USER }}
+          # Required: The SSH host to connect to.
+          host: ${{ secrets.SSH_IP }}
+          # Required: The SSH port to connect to.
+          port: ${{ secrets.SSH_PORT }}
+          # Required: The SSH private key to use for authentication.
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Required: The WireGuard configuration to use for the tunnel.
+          conf: ${{ secrets.WIREGUARD_CONF }}
+          # Required: The script to run on the remote host after the tunnel is established.
+          script: "ls -lh"
 
