@@ -22,5 +22,5 @@ jobs:
           # Required: The WireGuard configuration to use for the tunnel.
           conf: ${{ secrets.WIREGUARD_CONFIG }}
           # Required: The script to run on the remote host after the tunnel is established.
-          script: "ls -lh"
+          script: "cd workspace/worldinmovies && git pull && docker compose pull && docker compose up -d && docker system prune -f"
 
