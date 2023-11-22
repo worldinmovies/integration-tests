@@ -31,6 +31,21 @@ services:
       retries: 1
       start_period: 10s
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_URL=${RABBITMQ_URL:-rabbitmq}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+
   # Backends
   tmdb:
     image: seppaleinen/worldinmovies_tmdb:latest
@@ -53,6 +68,18 @@ services:
       timeout: 2s
       retries: 1
       start_period: 15s
+
+  tmdb-worker:
+    image: seppaleinen/worldinmovies_tmdb:latest
+    environment:
+      - SENTRY_API=${SENTRY_API_TMDB:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    entrypoint: celery -A settings worker -l info
 
   # Frontend
   webapp:
