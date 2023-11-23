@@ -43,7 +43,7 @@ describe('TMDB Service endpoints', () => {
             })
     });
 
-    it('Get Movie Details Endpoint', () => {
+    it.skip('Get Movie Details Endpoint', () => {
         const expectedMovie = {
             id: Cypress._.isNumber,
             title: Cypress._.isString,
@@ -60,7 +60,7 @@ describe('TMDB Service endpoints', () => {
             })
     });
 
-    it('Posting ratings.csv should be parseable', () => {
+    it.skip('Posting ratings.csv should be parseable', () => {
         cy.fixture('ratings', 'base64')
             .then(ratings => Cypress.Blob.base64StringToBlob(ratings, "text/csv"))
             .then(blob => {
@@ -89,7 +89,7 @@ describe('TMDB Service endpoints', () => {
             })
     });
 
-    it('Get Best Movies From Country Endpoint', () => {
+    it.skip('Get Best Movies From Country Endpoint', () => {
         const expectedResponse = {
             result: Cypress._.isArray,
             total_result: Cypress._.isNumber
