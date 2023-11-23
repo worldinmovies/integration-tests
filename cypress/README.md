@@ -3,9 +3,9 @@
 ### Cypress
 ```
 # To open cypress GUI
-npm run open
+npm run cypress:open
 # To run tests headless
-npm run test
+npm run cypress:test
 ```
 
 ### Playwright
@@ -14,7 +14,7 @@ npm run test
 npx playwright install
 
 npm run playwright:open
-nmp run playwright:test
+npm run playwright:test
 
 # Or
 npx playwright test --ui

@@ -17,12 +17,12 @@ config:
     local:
       target: "https://localhost"
       phases:
-        - duration: 1200
+        - duration: 60
           arrivalRate: 20
   phases:
     - name: 'Breaking test'
-      duration: 120
-      rampTo: 50
+      duration: 60
+      rampTo: 5
   engines:
     playwright:
       aggregateByName: true

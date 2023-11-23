@@ -41,3 +41,6 @@ scenarios:
       - get:
           url: /movie/9322
       - think: 5
+      - get:
+          url: /view/best/SE
+      - think: 5
