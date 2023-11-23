@@ -27,7 +27,9 @@ jobs:
       run: |
         docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
         docker cp datasubset/tmdb.movie.json mongo:/
+        docker cp datasubset/tmdb.flattened_movie.json mongo:/
         docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
+        docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.flattened_movie.json
         npm --prefix cypress install
         npm --prefix cypress run cypress:test
       shell: bash
