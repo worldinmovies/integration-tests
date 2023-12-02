@@ -7,7 +7,7 @@
     "cypress:test": "cypress run",
     "playwright:open": "playwright test --ui",
     "playwright:test": "playwright test",
-    "artillery:run": "artillery run --output test-results/artillery-report.json artillery/*-scenarios.yml && artillery report test-results/artillery-report.json"
+    "artillery:run": "artillery run --output test-results/artillery-report.json artillery/tmdb-scenarios.yml && artillery report test-results/artillery-report.json"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "@types/node": "^20.8.2",
     "artillery": "^2.0.0-37",
     "cypress": "^13.3.0",
+    "mongodb": "^5.9.1",
     "playwright": "^1.38.1",
     "typescript": "^5.2.2"
   }

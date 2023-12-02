@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-const url_address = Cypress.env('URL') !== undefined ? Cypress.env('URL') : "http://localhost:80";
+const url_address = Cypress.env('URL') !== undefined ? Cypress.env('URL') : "https://webapp.localhost";
 
 context('World Map', () => {
     beforeEach(() => {

@@ -1,0 +1,50 @@
+global:
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: true
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watch: true
+    exposedByDefault: false
+
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+
+log:
+  level: INFO
+  format: common
+
+entryPoints:
+  web:
+    address: ":80"
+    forwardedHeaders:
+      insecure: true
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  websecure:
+    address: ":443"
+    asDefault: true
+  mongo:
+    address: ":27017"
+  redis:
+    address: ":6379"
+  ping:
+    address: ":8082"
+  rabbitmq:
+    address: ":5672"
+  rabbitmq-admin:
+    address: ":15672"
+
+ping:
+  entryPoint: true
+
+serversTransport:
+  insecureSkipVerify: true

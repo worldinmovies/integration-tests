@@ -1,7 +1,7 @@
 
-module.exports = { scenario, mainPage, map, country, details };
+module.exports = { map, details };
 
-const playwrightUrl = 'https://localhost';
+const playwrightUrl = 'https://webapp.localhost';
 
 async function scenario(page) {
     const randomCountry = "US"
@@ -24,16 +24,8 @@ async function scenario(page) {
     await page.locator('a[href^="/country/"]').first().click();
 }
 
-async function mainPage(page) {
-    await page.goto(`${playwrightUrl}`);
-}
-
 async function map(page) {
     await page.goto(`${playwrightUrl}/map`);
-}
-
-async function country(page) {
-    await page.goto(`${playwrightUrl}/country/SE`);
 }
 
 async function details(page) {

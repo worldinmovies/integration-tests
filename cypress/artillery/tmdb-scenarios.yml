@@ -1,5 +1,13 @@
 config:
-  target: "https://localhost:8020"
+  target: "https://tmdb.localhost"
+  payload:
+    # path is relative to the location of the test script
+    - path: "movie_ids.csv"
+      fields:
+        - "id"
+    - path: "countries.csv"
+      fields:
+        - "iso"
   plugins:
     expect:
       reportFailuresAsErrors: true
@@ -15,14 +23,15 @@ config:
         - duration: 1200
           arrivalRate: 10
     local:
-      target: "https://localhost"
+      target: "https://tmdb.localhost"
       phases:
         - duration: 1200
           arrivalRate: 20
   phases:
     - name: 'Breaking test'
       duration: 120
-      rampTo: 50
+      rampTo: 70 # 60ok
+      maxVusers: 70
   engines:
     http:
       aggregateByName: true
@@ -34,13 +43,12 @@ scenarios:
   - name: TMDB Scenario
     flowFunction: "scenario"
     flow:
-      - log: "Current environment is {{ $environment }}"
       - get:
-          url: /movie/1700
+          url: /movie/{{ id }}
       - think: 5
       - get:
-          url: /movie/9322
+          url: /movie/{{ id }}
       - think: 5
       - get:
-          url: /view/best/SE
+          url: /view/best/{{ iso }}
       - think: 5

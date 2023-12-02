@@ -1,11 +1,5 @@
-const tmdbUrl = 'http://localhost:8020'
+const tmdbUrl = 'https://tmdb.localhost'
 
-
-const expectedImdbStatus = {
-    total: Cypress._.isNumber,
-    fetched: Cypress._.isNumber,
-    percentageDone: Cypress._.isNumber,
-}
 
 const expectedRatingsResponse = {
     found: Cypress._.isArray,
@@ -23,11 +17,6 @@ const expectedFound = {
     vote_count: Cypress._.isNumber
 }
 
-const expectedNotFound = {
-    year: Cypress._.isString,
-    imdb_id: Cypress._.isString,
-    title: Cypress._.isString
-}
 
 describe('TMDB Service endpoints', () => {
     it('Status Endpoint', () => {

@@ -1,6 +1,59 @@
 version: '3.8'
 
 services:
+  reverse-proxy:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.file.directory=/etc/traefik/"
+      - "--ping.entryPoint=ping"
+      - "--entrypoints.web.address=:80"
+      - "--entryPoints.web.forwardedHeaders.insecure"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.mongo.address=:27017"
+      - "--entrypoints.redis.address=:6379"
+      - "--entryPoints.ping.address=:8082"
+      - "--entrypoints.rabbitmq.address=:5672"
+      - "--entrypoints.rabbitmq-admin.address=:15672"
+      - "--entrypoints.websecure.asDefault=true"
+      - "--serversTransport.insecureSkipVerify=true"
+      - "--entrypoints.websecure.http.tls.certresolver=myresolver"
+      #- "--certificatesresolvers.myresolver.acme.dnschallenge.provider=duckdns"
+      #- "--certificatesresolvers.myresolver.acme.dnschallenge.delaybeforecheck=20"
+      #- "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      #- "--certificatesresolvers.myresolver.acme.email=davidbaeriksson@gmail.com"
+      #- "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "127.0.0.1:8080:8080"   # For Traefik dashboard
+      - "127.0.0.1:27017:27017" # Mongo
+      - "127.0.0.1:6379:6379"   # Redis
+      - "127.0.0.1:5672:5672"   # MQ
+      - "127.0.0.1:15672:15672" # MQ-admin
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN:-}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./persistent-data/letsencrypt:/letsencrypt"
+      - "./persistent-data/certs:/certs"
+      - "./traefik.dynamic.yml:/etc/traefik/dynamic.yml:ro"
+      - "./traefik.static.yml:/etc/traefik/static.yml:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mydashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.mydashboard.service=api@internal"
+      - "traefik.http.routers.mydashboard.entrypoints=websecure"
+      - "traefik.http.routers.mydashboard.tls.domains.main=traefik.localhost"
+      - "traefik.http.routers.mydashboard.tls.domains.sans=*.localhost"
+      - "traefik.tls.certificates.certFile=/certs/local-cert.pem"
+      - "traefik.tls.certificates.keyFile=/certs/local-key.pem"
+      - "traefik.tls.certificates.stores=default"
+
+
   # DBS
 
   mongo:
@@ -8,13 +61,16 @@ services:
     container_name: mongo
     volumes:
       - "./persistent-data/mongo-data:/data/db"
-    ports:
-      - "127.0.0.1:27017:27017"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mongo.entrypoints=mongo"
+      - "traefik.tcp.routers.mongo.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mongo.service=mongo-lb"
+      - "traefik.tcp.services.mongo-lb.loadbalancer.server.port=27017"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
+      interval: 5m
       timeout: 20s
-      retries: 1
       start_period: 10s
 
   # Queues
@@ -22,37 +78,59 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    ports:
-      - "127.0.0.1:6379:6379"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.redis.rule=HostSNI(`*`)"
+
+      - "traefik.tcp.routers.redis.entrypoints=redis"
+      - "traefik.tcp.routers.redis.service=redis-lb"
+      - "traefik.tcp.services.redis-lb.loadbalancer.server.port=6379"
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       interval: 30s
       timeout: 3s
-      retries: 1
       start_period: 10s
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
-    ports:
-      - "127.0.0.1:5672:5672"
-      - "127.0.0.1:15672:15672"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.rabbitmq.entrypoints=rabbitmq"
+      - "traefik.tcp.routers.rabbitmq.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.rabbitmq.service=rabbitmq-lb"
+
+      - "traefik.tcp.services.rabbitmq-lb.loadbalancer.server.port=5672"
+
+      - "traefik.http.routers.rabbitmq-admin.tls=true"
+      - "traefik.http.routers.rabbitmq-admin.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq-admin.rule=Host(`rabbitmq.admin.localhost`)"
+      - "traefik.http.routers.rabbitmq-admin.service=rabbitmq-admin-lb"
+      - "traefik.http.services.rabbitmq-admin-lb.loadbalancer.server.port=15672"
     environment:
-      - RABBITMQ_URL=${RABBITMQ_URL:-rabbitmq}
+      - RABBITMQ_URL=${RABBITMQ_URL:-rabbitmq.localhost}
+      - RABBITMQ_DEFAULT_USER=${MQ_USER:-seppa}
+      - RABBITMQ_DEFAULT_PASS=${MQ_PASS:-password}
     healthcheck:
       test: rabbitmq-diagnostics -q ping
-      interval: 30s
+      interval: 5m
       timeout: 30s
-      retries: 3
+      start_period: 5s
 
 
   # Backends
   tmdb:
-    image: seppaleinen/worldinmovies_tmdb:latest
+    image: seppaleinen/worldinmovies_tmdb:test
     expose:
       - 8020
-    ports:
-      - "127.0.0.1:8020:8020"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tmdb.rule=Host(`tmdb.localhost`)"
+      - "traefik.http.routers.tmdb.tls=true"
+      - "traefik.http.routers.tmdb.entrypoints=web,websecure"
+      - "traefik.http.routers.tmdb.service=tmdb-lb"
+      - "traefik.http.services.tmdb-lb.loadbalancer.server.port=8020"
+      - "traefik.http.services.tmdb-lb.loadbalancer.server.scheme=http"
     environment:
       - TMDB_API=${TMDB_API}
       - SENTRY_API=${SENTRY_API_TMDB:-}
@@ -61,20 +139,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -k --fail http://localhost:8020/health" ]
-      interval: 30s
-      timeout: 2s
-      retries: 1
-      start_period: 15s
 
   tmdb-worker:
-    image: seppaleinen/worldinmovies_tmdb:latest
+    image: seppaleinen/worldinmovies_tmdb:test
     environment:
       - SENTRY_API=${SENTRY_API_TMDB:-}
     depends_on:
       mongo:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -83,23 +159,23 @@ services:
 
   # Frontend
   webapp:
-    image: seppaleinen/worldinmovies_webapp
+    image: seppaleinen/worldinmovies_webapp:test
     depends_on:
       tmdb:
         condition: service_healthy
-    ports:
-      - "80:80"
-      - "443:443"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webapp.rule=Host(`webapp.localhost`)"
+      - "traefik.http.routers.webapp.tls=true"
+      - "traefik.http.routers.webapp.entrypoints=websecure"
+      - "traefik.http.routers.webapp.service=webapp-lb"
+      - "traefik.http.services.webapp-lb.loadbalancer.server.port=80"
+      - "traefik.http.services.webapp-lb.loadbalancer.server.scheme=http"
     environment:
-      - REACT_APP_TMDB_URL=${REACT_APP_TMDB_URL:-}
-      - REACT_APP_SENTRY_API=${SENTRY_API_WEB:-}
-    healthcheck:
-      test: ['CMD', 'nc', '-vz', '-w1', 'localhost', '443']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
+      - VITE_TMDB_URL=${VITE_TMDB_URL:-tmdb.localhost}
+      - VITE_SENTRY_API=${VITE_SENTRY_API_WEB:-}
 
 volumes:
   certs:
   mongo_data:
+  letsencrypt:
