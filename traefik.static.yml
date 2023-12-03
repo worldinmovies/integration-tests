@@ -27,11 +27,14 @@ entryPoints:
     http:
       redirections:
         entryPoint:
-          to: https
+          to: websecure
           scheme: https
   websecure:
     address: ":443"
     asDefault: true
+    http:
+      tls:
+        certresolver: myresolver
   mongo:
     address: ":27017"
   redis:
@@ -42,9 +45,25 @@ entryPoints:
     address: ":5672"
   rabbitmq-admin:
     address: ":15672"
+  jaeger-1:
+    address: ":57282/udp"
+  jaeger-2:
+    address: ":6831/udp"
 
 ping:
-  entryPoint: true
+  entryPoint: ping
+
+tracing:
+  jaeger: {}
 
 serversTransport:
   insecureSkipVerify: true
+
+#certificatesresolvers:
+#  myresolver:
+#    acme:
+#      dnschallenge:
+#        provider: duckdns
+#        delaybeforecheck: 20
+#      storage: /letsencrypt/acme.json
+#      email: davidbaeriksson@gmail.com

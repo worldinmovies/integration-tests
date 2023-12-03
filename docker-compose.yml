@@ -3,29 +3,6 @@ version: '3.8'
 services:
   reverse-proxy:
     image: traefik:v3.0
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.file.directory=/etc/traefik/"
-      - "--ping.entryPoint=ping"
-      - "--entrypoints.web.address=:80"
-      - "--entryPoints.web.forwardedHeaders.insecure"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.mongo.address=:27017"
-      - "--entrypoints.redis.address=:6379"
-      - "--entryPoints.ping.address=:8082"
-      - "--entrypoints.rabbitmq.address=:5672"
-      - "--entrypoints.rabbitmq-admin.address=:15672"
-      - "--entrypoints.websecure.asDefault=true"
-      - "--serversTransport.insecureSkipVerify=true"
-      - "--entrypoints.websecure.http.tls.certresolver=myresolver"
-      #- "--certificatesresolvers.myresolver.acme.dnschallenge.provider=duckdns"
-      #- "--certificatesresolvers.myresolver.acme.dnschallenge.delaybeforecheck=20"
-      #- "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      #- "--certificatesresolvers.myresolver.acme.email=davidbaeriksson@gmail.com"
-      #- "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
@@ -41,7 +18,7 @@ services:
       - "./persistent-data/letsencrypt:/letsencrypt"
       - "./persistent-data/certs:/certs"
       - "./traefik.dynamic.yml:/etc/traefik/dynamic.yml:ro"
-      - "./traefik.static.yml:/etc/traefik/static.yml:ro"
+      - "./traefik.static.yml:/etc/traefik/traefik.yml:ro"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mydashboard.rule=Host(`traefik.localhost`)"
@@ -117,17 +94,35 @@ services:
       timeout: 30s
       start_period: 5s
 
+  # Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1
+    container_name: jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaeger.rule=Host(`jaeger.localhost`)"
+      - "traefik.http.routers.jaeger.tls=true"
+      - "traefik.http.routers.jaeger.entrypoints=websecure"
+      - "traefik.http.routers.jaeger.service=jaeger-lb"
+      - "traefik.http.services.jaeger-lb.loadbalancer.server.port=16686"
+      - "traefik.udp.routers.jaeger1.entrypoints=jaeger-1"
+      - "traefik.udp.routers.jaeger1.service=jaeger-1"
+      - "traefik.udp.services.jaeger-1.loadbalancer.server.port=57282"
+      - "traefik.udp.routers.jaeger2.entrypoints=jaeger-2"
+      - "traefik.udp.routers.jaeger2.service=jaeger-2"
+      - "traefik.udp.services.jaeger-2.loadbalancer.server.port=6831"
+
 
   # Backends
   tmdb:
     image: seppaleinen/worldinmovies_tmdb:test
-    expose:
-      - 8020
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tmdb.rule=Host(`tmdb.localhost`)"
       - "traefik.http.routers.tmdb.tls=true"
-      - "traefik.http.routers.tmdb.entrypoints=web,websecure"
+      - "traefik.http.routers.tmdb.entrypoints=websecure"
       - "traefik.http.routers.tmdb.service=tmdb-lb"
       - "traefik.http.services.tmdb-lb.loadbalancer.server.port=8020"
       - "traefik.http.services.tmdb-lb.loadbalancer.server.scheme=http"
