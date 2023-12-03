@@ -117,7 +117,7 @@ services:
 
   # Backends
   tmdb:
-    image: seppaleinen/worldinmovies_tmdb:test
+    image: seppaleinen/worldinmovies_tmdb:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tmdb.rule=Host(`tmdb.localhost`)"
@@ -139,7 +139,7 @@ services:
     restart: unless-stopped
 
   tmdb-worker:
-    image: seppaleinen/worldinmovies_tmdb:test
+    image: seppaleinen/worldinmovies_tmdb:latest
     environment:
       - SENTRY_API=${SENTRY_API_TMDB:-}
     depends_on:
@@ -154,7 +154,7 @@ services:
 
   # Frontend
   webapp:
-    image: seppaleinen/worldinmovies_webapp:test
+    image: seppaleinen/worldinmovies_webapp:latest
     depends_on:
       tmdb:
         condition: service_healthy
