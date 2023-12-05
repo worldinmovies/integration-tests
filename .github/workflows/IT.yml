@@ -31,7 +31,7 @@ jobs:
         docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
         docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.flattened_movie.json
         npm --prefix cypress install
-        sleep 120
+        ./wait_until_running.sh
         npm --prefix cypress run cypress:test
       shell: bash
     - name: Check errors

@@ -7,6 +7,9 @@ module.exports = defineConfig({
         baseUrl: 'https://localhost',
         specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
         experimentalRunAllSpecs: true,
+        chromeWebSecurity: false,
+        screenshotOnRunFailure: true,
+        retries: 3,
         setupNodeEvents(on, config) {
             on("task", {
                 ping_mongo(mongo_url) {
