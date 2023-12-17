@@ -34,7 +34,7 @@ entryPoints:
     asDefault: true
     http:
       tls:
-        certresolver: myresolver
+        certresolver: default
   mongo:
     address: ":27017"
   redis:
@@ -67,3 +67,17 @@ serversTransport:
 #        delaybeforecheck: 20
 #      storage: /letsencrypt/acme.json
 #      email: davidbaeriksson@gmail.com
+
+default-headers:
+  headers:
+    frameDeny: true
+    sslRedirect: true
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 15552000
+    customFrameOptionsValue: SAMEORIGIN
+    customRequestHeaders:
+      X-Forwarded-Proto: https

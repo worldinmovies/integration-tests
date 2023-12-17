@@ -3,10 +3,16 @@ http:
     traefik:
       rule: "Host(`traefik.localhost`)"
       service: "api@internal"
+      entrypoints: "websecure"
       tls:
         domains:
-          - main: "traefik.localhost"
-            sans: "*.localhost"
+          - main: "traefik.local"
+            sans: "*.local"
+      #middlewares:
+      #  - default-headers
+
+log:
+  level: INFO
 
 tls:
   certificates:
@@ -14,3 +20,17 @@ tls:
       keyFile: /certs/local-key.pem
       stores:
         - default
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/local-cert.pem
+        keyFile: /certs/local-key.pem
+#      defaultGeneratedCert:
+#        resolver: myresolver
+#        domain:
+#          main: worldinmovies.duckdns.org
+#          sans:
+#            - webapp.worldinmovies.duckdns.org
+#            - tmdb.worldinmovies.duckdns.org
+#            - rabbit-mq-admin.worldinmovies.duckdns.org
+#            - traefik.worldinmovies.duckdns.org

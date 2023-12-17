@@ -19,16 +19,6 @@ services:
       - "./persistent-data/certs:/certs"
       - "./traefik.dynamic.yml:/etc/traefik/dynamic.yml:ro"
       - "./traefik.static.yml:/etc/traefik/traefik.yml:ro"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mydashboard.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.mydashboard.service=api@internal"
-      - "traefik.http.routers.mydashboard.entrypoints=websecure"
-      - "traefik.http.routers.mydashboard.tls.domains.main=traefik.localhost"
-      - "traefik.http.routers.mydashboard.tls.domains.sans=*.localhost"
-      - "traefik.tls.certificates.certFile=/certs/local-cert.pem"
-      - "traefik.tls.certificates.keyFile=/certs/local-key.pem"
-      - "traefik.tls.certificates.stores=default"
 
 
   # DBS
@@ -81,7 +71,7 @@ services:
 
       - "traefik.http.routers.rabbitmq-admin.tls=true"
       - "traefik.http.routers.rabbitmq-admin.entrypoints=websecure"
-      - "traefik.http.routers.rabbitmq-admin.rule=Host(`rabbitmq.admin.localhost`)"
+      - "traefik.http.routers.rabbitmq-admin.rule=Host(`rabbitmqadmin.localhost`)"
       - "traefik.http.routers.rabbitmq-admin.service=rabbitmq-admin-lb"
       - "traefik.http.services.rabbitmq-admin-lb.loadbalancer.server.port=15672"
     environment:
@@ -129,6 +119,8 @@ services:
     environment:
       - TMDB_API=${TMDB_API}
       - SENTRY_API=${SENTRY_API_TMDB:-}
+      - RABBITMQ_DEFAULT_USER=${MQ_USER:-seppa}
+      - RABBITMQ_DEFAULT_PASS=${MQ_PASS:-password}
     depends_on:
       mongo:
         condition: service_healthy
@@ -142,6 +134,8 @@ services:
     image: seppaleinen/worldinmovies_tmdb:test
     environment:
       - SENTRY_API=${SENTRY_API_TMDB:-}
+      - RABBITMQ_DEFAULT_USER=${MQ_USER:-seppa}
+      - RABBITMQ_DEFAULT_PASS=${MQ_PASS:-password}
     depends_on:
       mongo:
         condition: service_healthy
