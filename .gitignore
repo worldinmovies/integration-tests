@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 persistent-data/*-data/*
+
+cypress/cypress/screenshots/*
