@@ -1,4 +1,4 @@
-const rabbitAdminUrl = 'https://rabbitmq.admin.localhost'
+const rabbitAdminUrl = 'http://localhost:15672'
 
 describe('RabbitMQ Smoke Test', () => {
     it('Check Rabbit Admin Availability', () => {

@@ -1,4 +1,4 @@
-const tmdbUrl = 'https://tmdb.localhost'
+const tmdbUrl = 'http://localhost:8020'
 
 
 const expectedRatingsResponse = {

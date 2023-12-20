@@ -4,8 +4,8 @@ services:
   # DBS
   mongo:
     image: mongo:7-jammy
-    expose:
-      - "27017"
+    ports:
+      - "27017:27017"
     container_name: mongo
     volumes:
       - "./persistent-data/mongo-data:/data/db"
