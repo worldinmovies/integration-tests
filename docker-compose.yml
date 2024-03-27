@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # DBS
   mongo:
@@ -64,6 +62,8 @@ services:
 
   tmdb-worker:
     image: seppaleinen/worldinmovies_tmdb:latest
+    ports:
+      - "8080:8080"
     environment:
       - SENTRY_API=${SENTRY_API_TMDB:-}
     depends_on:
@@ -80,12 +80,12 @@ services:
   webapp:
     image: seppaleinen/worldinmovies_webapp:latest
     ports:
-      - "80:80"
-      - "443:443"
+      - "${VITE_WEBAPP_PORT}:80"
     depends_on:
       tmdb:
         condition: service_healthy
     environment:
+      - VITE_WEBAPP_PORT=${VITE_WEBAPP_PORT}
       - VITE_TMDB_URL=${VITE_TMDB_URL:-tmdb.localhost}
       - VITE_SENTRY_API=${VITE_SENTRY_API_WEB:-}
 

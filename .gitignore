@@ -132,3 +132,6 @@ dist
 persistent-data/*-data/*
 
 cypress/cypress/screenshots/*
+
+
+.idea
