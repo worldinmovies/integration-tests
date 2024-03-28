@@ -62,8 +62,6 @@ services:
 
   tmdb-worker:
     image: seppaleinen/worldinmovies_tmdb:latest
-    ports:
-      - "8080:8080"
     environment:
       - SENTRY_API=${SENTRY_API_TMDB:-}
     depends_on:
