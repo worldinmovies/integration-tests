@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 
 module.exports = defineConfig({
     e2e: {
-        baseUrl: 'https://localhost',
+        baseUrl: 'http://localhost',
         specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
         experimentalRunAllSpecs: true,
         chromeWebSecurity: false,
