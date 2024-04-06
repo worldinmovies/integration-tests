@@ -25,7 +25,7 @@ jobs:
         cache-dependency-path: cypress/package-lock.json
     - name: Start containers
       run: |
-        docker-compose -f "docker-compose.yml" up -d || docker-compose -f "docker-compose.yml" up -d
+        VITE_WEBAPP_PORT=:80 docker-compose -f "docker-compose.yml" up -d || VITE_WEBAPP_PORT=:80 docker-compose -f "docker-compose.yml" up -d
         docker cp datasubset/tmdb.movie.json mongo:/
         docker cp datasubset/tmdb.flattened_movie.json mongo:/
         docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
