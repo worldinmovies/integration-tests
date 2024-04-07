@@ -16,5 +16,5 @@ curl --connect-timeout 10 --retry 10 --retry-max-time 60 --silent --show-error -
 curl --connect-timeout 10 --retry 10 --retry-max-time 60 --silent --show-error -kL http://localhost:8020/status && echo "TMDB up and running" || log_and_exit "TMDB"
 
 #####   Webapp   #####
-curl --connect-timeout 10 --retry 10 --retry-max-time 60 --silent --show-error -kL https://localhost && echo "Webapp up and running" || log_and_exit "Webapp"
+curl --connect-timeout 10 --retry 10 --retry-max-time 60 --silent --show-error -kL http://localhost && echo "Webapp up and running" || log_and_exit "Webapp"
 
