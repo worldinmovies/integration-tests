@@ -26,6 +26,7 @@ jobs:
     - name: Start containers
       run: |
         echo "VITE_WEBAPP_PORT=80" > .env
+        echo "DJANGO_SECRET_KEY="$(uuidgen) >> .env
         docker-compose up -d || docker-compose up -d
         docker cp datasubset/tmdb.movie.json mongo:/
         docker cp datasubset/tmdb.flattened_movie.json mongo:/
