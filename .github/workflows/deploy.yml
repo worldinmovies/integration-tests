@@ -25,5 +25,15 @@ jobs:
           # Required: The WireGuard configuration to use for the tunnel.
           conf: ${{ secrets.WIREGUARD_CONFIG }}
           # Required: The script to run on the remote host after the tunnel is established.
-          script: "cd workspace/integration-tests && git stash && git pull && git stash pop && docker compose pull && docker compose up -d && docker system prune -f"
+          script: "cd workspace/integration-tests && git pull && docker compose up -d --pull"
 
+      - name: Check errors
+        if: ${{ failure() }}
+        run: |
+          cd workspace/integration-tests
+          git status
+          docker compose logs
+
+      - name: Cleanup
+        if: ${{ always() }}
+        run: docker system prune -a
