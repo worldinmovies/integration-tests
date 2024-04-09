@@ -1,7 +1,14 @@
 name: Deploy
 
 on:
+  push:
+    branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      app:
+        description: 'App to deploy, can be tmdb/webapp or an empty string, for deploying all'
+        required: false
+        default: ''
 
 concurrency:
   group: ${{ github.workflow }}
@@ -25,7 +32,7 @@ jobs:
           # Required: The WireGuard configuration to use for the tunnel.
           conf: ${{ secrets.WIREGUARD_CONFIG }}
           # Required: The script to run on the remote host after the tunnel is established.
-          script: "cd workspace/integration-tests && git pull && docker compose up -d --pull"
+          script: "cd workspace/integration-tests && git pull && docker compose up -d --pull ${{ github.event.inputs.app }}"
 
       - name: Check errors
         if: ${{ failure() }}
