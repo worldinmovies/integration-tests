@@ -27,7 +27,7 @@ jobs:
         node-version: 18.x
         cache: 'npm'
         cache-dependency-path: cypress/package-lock.json
-    - name: Start containers
+    - name: Start containers and run integration tests for ${{ github.event.inputs.trigger }}
       run: |
         echo "Triggered by: ${{ github.event.inputs.trigger }}"
         echo "VITE_WEBAPP_PORT=80" > .env
