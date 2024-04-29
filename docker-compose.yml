@@ -101,14 +101,14 @@ services:
   webapp:
     image: seppaleinen/worldinmovies_webapp:latest
     ports:
-      - "${VITE_WEBAPP_PORT}:80"
+      - "${VITE_WEBAPP_PORT:?'VITE_WEBAPP_PORT must be set'}:80"
     depends_on:
       tmdb:
         condition: service_healthy
     environment:
       - VITE_WEBAPP_PORT=${VITE_WEBAPP_PORT}
       - VITE_TMDB_URL=${VITE_TMDB_URL:-tmdb.localhost}
-      - VITE_SENTRY_API=${VITE_SENTRY_API_WEB:-}
+      - VITE_SENTRY_WEB=${VITE_SENTRY_WEB:-}
 
 volumes:
   mongo_data:
