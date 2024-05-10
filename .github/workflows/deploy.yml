@@ -37,6 +37,8 @@ jobs:
       - name: Check errors
         if: ${{ failure() }}
         run: |
+          echo "WIREGUARD CONFIG: $WIREGUARD_CONFIG"
+          sudo cat /etc/wireguard/wg0.conf
           cd workspace/integration-tests
           git status
           docker compose logs
