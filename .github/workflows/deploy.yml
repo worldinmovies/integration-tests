@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: seppaleinen/actions-ssh-wireguard@0.7-dev
+      - uses: seppaleinen/actions-ssh-wireguard@0.8-dev
         with:
           # Required: The SSH user to connect as.
           user: ${{ secrets.SSH_USER }}
@@ -32,17 +32,15 @@ jobs:
           # Required: The WireGuard configuration to use for the tunnel.
           conf: ${{ secrets.WIREGUARD_CONFIG }}
           # Required: The script to run on the remote host after the tunnel is established.
-          script: "whoami; pwd; touch ~/github.washere; cd workspace/integration-tests && git pull && docker compose up -d --pull ${{ github.event.inputs.trigger }}"
+          script: "cd workspace/integration-tests && git pull && docker compose up -d --pull ${{ github.event.inputs.trigger }}"
 
       - name: Check errors
         if: ${{ failure() }}
         run: |
-          echo "WIREGUARD CONFIG: $WIREGUARD_CONFIG"
-          sudo cat /etc/wireguard/wg0.conf
           cd workspace/integration-tests
           git status
           docker compose logs
 
       - name: Cleanup
         if: ${{ always() }}
-        run: docker system prune -a
+        run: docker system prune -f
