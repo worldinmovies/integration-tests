@@ -43,4 +43,4 @@ jobs:
 
       - name: Cleanup
         if: ${{ always() }}
-        run: docker system prune -f
+        run: docker system prune -f && logout && sudo wg-quick down wg0
