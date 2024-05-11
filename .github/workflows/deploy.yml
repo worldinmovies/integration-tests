@@ -32,7 +32,7 @@ jobs:
           # Required: The WireGuard configuration to use for the tunnel.
           conf: ${{ secrets.WIREGUARD_CONFIG }}
           # Required: The script to run on the remote host after the tunnel is established.
-          script: "cd workspace/integration-tests && git pull && docker compose up -d --pull ${{ github.event.inputs.trigger }}"
+          script: "cd workspace/integration-tests && git pull && docker compose pull && docker compose up -d ${{ github.event.inputs.trigger }}"
 
       - name: Check errors
         if: ${{ failure() }}
