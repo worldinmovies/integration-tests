@@ -16,7 +16,7 @@ concurrency:
 jobs:
   deploy:
     name: Setup wireguard connection, and deploy ${{ github.event.inputs.trigger }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: seppaleinen/actions-ssh-wireguard@0.8.10-dev
