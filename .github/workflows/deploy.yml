@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: seppaleinen/actions-ssh-wireguard@0.9-dev
+      - uses: seppaleinen/actions-ssh-wireguard@0.9.1-dev
         with:
           # Required: The SSH user to connect as.
           user: ${{ secrets.SSH_USER }}
