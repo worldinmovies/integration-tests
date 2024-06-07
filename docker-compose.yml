@@ -47,6 +47,7 @@ services:
   # Backends
   tmdb:
     image: seppaleinen/worldinmovies_tmdb:latest
+    container_name: tmdb
     ports:
       - "8020:8020"
     environment:
@@ -71,6 +72,7 @@ services:
 
   tmdb-worker:
     image: seppaleinen/worldinmovies_tmdb:latest
+    container_name: tmdb-worker
     environment:
       - TMDB_API=${TMDB_API}
       - SENTRY_API=${SENTRY_API_TMDB:-}
