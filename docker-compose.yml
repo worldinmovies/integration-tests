@@ -1,18 +1,22 @@
 services:
   # DBS
   mongo:
-    image: mongo:7-jammy
+    image: mongo:noble
     ports:
       - "27017:27017"
     container_name: mongo
-#    command: --wiredTigerCacheSizeGB 16
+    command: --wiredTigerCacheSizeGB 8
     volumes:
-      - "./persistent-data/mongo-data:/data/db"
+      - "./persistent-data/mongo-data2:/data/db"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 20s
       start_period: 10s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: seppa
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: tmdb
 
   # Queues
 
@@ -54,7 +58,7 @@ services:
       - TMDB_API=${TMDB_API}
       - SENTRY_API=${SENTRY_API_TMDB:-}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-}
-      - REDIS_URL=${REDIS_URL:-redis}
+      - REDIS_URL=${REDIS_URL:-redis://redis}
       - MONGO_URL=${MONGO_URL:-mongo}
       - MONGO_USER=${MONGO_USER:-seppa}
       - MONGO_PASSWORD=${MONGO_PASSWORD:-password}
@@ -77,7 +81,7 @@ services:
       - TMDB_API=${TMDB_API}
       - SENTRY_API=${SENTRY_API_TMDB:-}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - REDIS_URL=${REDIS_URL:-redis}
+      - REDIS_URL=${REDIS_URL:-redis://redis}
       - MONGO_URL=${MONGO_URL:-mongo}
       - MONGO_USER=${MONGO_USER:-seppa}
       - MONGO_PASSWORD=${MONGO_PASSWORD:-password}
@@ -111,6 +115,7 @@ services:
       - VITE_WEBAPP_PORT=${VITE_WEBAPP_PORT}
       - VITE_TMDB_URL=${VITE_TMDB_URL:-tmdb.localhost}
       - VITE_SENTRY_WEB=${VITE_SENTRY_WEB:-}
+      - TMDB_UPSTREAM=tmdb:8020
 
 volumes:
   mongo_data:
