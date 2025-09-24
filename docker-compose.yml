@@ -119,8 +119,3 @@ services:
 
 volumes:
   mongo_data:
-
-networks:
-  default:
-    name: world
-    external: true
