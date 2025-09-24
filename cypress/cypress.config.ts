@@ -12,8 +12,9 @@ module.exports = defineConfig({
         retries: 3,
         setupNodeEvents(on, config) {
             on("task", {
-                ping_mongo(mongo_url) {
+                async ping_mongo(mongo_url) {
                     const client = new MongoClient(mongo_url);
+                    await client.connect();
                     return client.db('tmdb')
                         .admin()
                         .ping();

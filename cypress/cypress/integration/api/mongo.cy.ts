@@ -1,4 +1,4 @@
-const mongoUrl = 'mongodb://localhost:27017'
+const mongoUrl = 'mongodb://localhost:27017/tmdb?authSource=tmdb'
 
 describe('Mongo Smoke Test', () => {
     it('Check Mongo Availability', () => {
