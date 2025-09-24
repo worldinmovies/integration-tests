@@ -21,10 +21,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js 18.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v3
       with:
-        node-version: 18.x
+        node-version: 22.x
         cache: 'npm'
         cache-dependency-path: cypress/package-lock.json
     - name: Start containers and run integration tests for ${{ github.event.inputs.trigger }}
@@ -35,8 +35,8 @@ jobs:
         docker compose up -d || docker compose up -d
         docker cp datasubset/tmdb.movie.json mongo:/
         docker cp datasubset/tmdb.flattened_movie.json mongo:/
-        docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
-        docker exec mongo mongoimport -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.flattened_movie.json
+        docker exec mongo mongoimport -u seppa -p password -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.movie.json
+        docker exec mongo mongoimport -u seppa -p password -d tmdb -c movie --mode upsert --jsonArray --type json --file tmdb.flattened_movie.json
         npm --prefix cypress install
         ./wait_until_running.sh
         npm --prefix cypress run cypress:test
