@@ -1,14 +1,14 @@
 name: Deploy
 
 on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
-    inputs:
-      trigger:
-        description: 'App to deploy, can be tmdb/webapp or an empty string, for deploying all'
-        required: false
-        default: ''
+  #push:
+  #  branches: [ "main" ]
+  #workflow_dispatch:
+  #  inputs:
+  #    trigger:
+  #      description: 'App to deploy, can be tmdb/webapp or an empty string, for deploying all'
+  #      required: false
+  #      default: ''
 
 concurrency:
   group: ${{ github.workflow }}
