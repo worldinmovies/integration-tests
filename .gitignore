@@ -129,7 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-persistent-data/*-data/*
+persistent-data/*-data*/*
 
 cypress/cypress/screenshots/*
 
