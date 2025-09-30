@@ -73,7 +73,12 @@ services:
       rabbitmq:
         condition: service_healthy
     restart: unless-stopped
-
+    healthcheck:
+      test: curl -k --fail http://localhost:8020/health
+      interval: 20s
+      timeout: 4s
+      retries: 3
+      start_period: 3s
   tmdb-worker:
     image: seppaleinen/worldinmovies_tmdb:latest
     container_name: tmdb-worker
